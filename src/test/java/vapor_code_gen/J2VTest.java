@@ -10,30 +10,30 @@ public class J2VTest {
 
     void passFileToMain(String name) throws IOException {
         String[] args = null;
-        final InputStream original = System.in;
+        final InputStream ogIn = System.in;
         try {
-            final FileInputStream fips = new FileInputStream(new File("src/test/resources/part2_input/" + name));
-            System.setIn(fips);
+            final FileInputStream tempIn = new FileInputStream(new File("src/test/resources/part2_input/" + name));
+            System.setIn(tempIn);
             J2V.generateCode();
-            fips.close();
+            tempIn.close();
         } finally {
-            System.setIn(original);
+            System.setIn(ogIn);
         }
     }
 
     String testFile(String name) throws IOException {
         // Setup
-        final PrintStream originalOut = System.out;
-        final ByteArrayOutputStream myOut = new ByteArrayOutputStream();
-        System.setOut(new PrintStream(myOut));
+        final PrintStream ogOut = System.out;
+        final ByteArrayOutputStream tempOut = new ByteArrayOutputStream();
+        System.setOut(new PrintStream(tempOut));
 
         passFileToMain(name);
 
         // Clean up
-        System.setOut(originalOut);
-        myOut.close();
+        System.setOut(ogOut);
+        tempOut.close();
 
-        return myOut.toString();
+        return tempOut.toString();
     }
 
 
