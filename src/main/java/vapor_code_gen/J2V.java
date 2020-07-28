@@ -49,7 +49,7 @@ public class J2V {
                 }
 
                 // Explicit fields
-                Iterator<String> fields = currentClassTemp.myItems.getItems().iterator();
+                Iterator<String> fields = currentClassTemp.Items.getItems().iterator();
                 while (fields.hasNext()) {
                     currentRecordTemp.addField(fields.next());
                 }

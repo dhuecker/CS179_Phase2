@@ -9,13 +9,13 @@ public class SymbolTableConstructor implements Visitor {
   public Goal root;
   public SymbolTable symbolTable;
 
-  ClassBook currClass = null;
-  MethodsBook currMethod = null;
+  ClassBook currentClass = null;
+  MethodsBook currentMethod = null;
 
-  public boolean foundError = false;
+  public boolean errorFound = false;
 
-  public void RegTypeError() {
-    foundError = true;
+  public void TypeError() {
+    errorFound = true;
   }
 
   //
@@ -49,27 +49,27 @@ public class SymbolTableConstructor implements Visitor {
 
     FormalParameterList pl = (FormalParameterList)no.node;
     // If f1 is empty -> Always distinct (i.e. one parameter)
-    int n = pl.f1.size();
-    if (n == 0) {
+    int temp = pl.f1.size();
+    if (temp == 0) {
       return true;
     } else {
-      FormalParameter param_i;
-      FormalParameter param_j;
-      for (int i = -1; i < n; i++) {
-        for (int j = -1; j < n; j++) {          
+      FormalParameter param_one;
+      FormalParameter param_two;
+      for (int i = -1; i < temp; i++) {
+        for (int j = -1; j < temp; j++) {
           if (i == -1) {
-            param_i = pl.f0;
+            param_one = pl.f0;
           } else {
-            param_i = ((FormalParameterRest)pl.f1.elementAt(i)).f1;
+            param_one = ((FormalParameterRest)pl.f1.elementAt(i)).f1;
           }
           if (j == -1) {
-            param_j = pl.f0;
+            param_two = pl.f0;
           } else {
-            param_j = ((FormalParameterRest)pl.f1.elementAt(j)).f1;
+            param_two = ((FormalParameterRest)pl.f1.elementAt(j)).f1;
           }
 
           if (
-            param_i.f1.f0.toString().equals(param_j.f1.f0.toString()) 
+            param_one.f1.f0.toString().equals(param_two.f1.f0.toString())
             && i != j
           ) {
             return false;
@@ -82,23 +82,21 @@ public class SymbolTableConstructor implements Visitor {
   }
 
   public NodeChoice findClass(String classname) {
-    for (int i = 0; i < root.f1.size(); i++) {
-      TypeDeclaration td = (TypeDeclaration) root.f1.elementAt(i);
+    for (int a = 0; a < root.f1.size(); a++) {
+      TypeDeclaration td = (TypeDeclaration) root.f1.elementAt(a);
 
-      String currName;
+      String currentN;
       if (td.f0.which == 0) {
-        currName = classname((ClassDeclaration)td.f0.choice);
+        currentN = classname((ClassDeclaration)td.f0.choice);
       } else {
-        currName = classname((ClassExtendsDeclaration)td.f0.choice);
+        currentN = classname((ClassExtendsDeclaration)td.f0.choice);
       }
 
-      if (classname.equals(currName)) {
+      if (classname.equals(currentN)) {
         return td.f0;
       }
     }
 
-    // This is an error if it happens... Not sure how to
-    // handle this situation yet
     return null;
   }
 
@@ -106,28 +104,26 @@ public class SymbolTableConstructor implements Visitor {
     return c.f3; 
   }
 
-  // NOTE: The fields in c take precedence over fields in
-  // the superclass of c
+
   public NodeListOptional fields(ClassExtendsDeclaration c) {
     // Find the superclass
-    NodeChoice superclass = findClass(c.f3.f0.toString());
-    NodeListOptional scFields;
-    if (superclass.which == 0) {
-      scFields = (NodeListOptional)fields((ClassDeclaration)superclass.choice);
+    NodeChoice superC = findClass(c.f3.f0.toString());
+    NodeListOptional superF;
+    if (superC.which == 0) {
+      superF = (NodeListOptional)fields((ClassDeclaration)superC.choice);
     } else {
-      scFields = (NodeListOptional)fields((ClassExtendsDeclaration)superclass.choice);
+      superF = (NodeListOptional)fields((ClassExtendsDeclaration)superC.choice);
     }
 
-    // List which contains a typeEnv of C*CS
     NodeListOptional typeEnv = new NodeListOptional();
     // Add class' elements to the list
-    for (int i = 0; i < c.f5.size(); i++) { 
-      typeEnv.addNode(c.f5.elementAt(i));
+    for (int a = 0; a < c.f5.size(); a++) {
+      typeEnv.addNode(c.f5.elementAt(a));
     }
 
     // Add superclass' elements to the list
-    for (int i = 0; i < scFields.size(); i++) { 
-      typeEnv.addNode(scFields.elementAt(i));
+    for (int a = 0; a < superF.size(); a++) {
+      typeEnv.addNode(superF.elementAt(a));
     }
     
     return typeEnv;
@@ -164,9 +160,9 @@ public class SymbolTableConstructor implements Visitor {
   }
 
   public boolean noOverloading(String c, String sc, String id_m) {
-    MethodType a = methodtype(c, id_m);
-    MethodType b = methodtype(sc, id_m);
-    if (methodtype(sc, id_m) != null && a.equals(b))
+    MethodType one = methodtype(c, id_m);
+    MethodType two = methodtype(sc, id_m);
+    if (methodtype(sc, id_m) != null && one.equals(two))
       return true;
 
     return false;
@@ -234,8 +230,8 @@ public class SymbolTableConstructor implements Visitor {
   * f17 -> "}"
   */
   public void visit(MainClass n) {
-    ClassBook temp = new ClassBook(classname(n));
-    currClass = temp;
+    ClassBook tempbook = new ClassBook(classname(n));
+    currentClass = tempbook;
 
     n.f0.accept(this);
     n.f1.accept(this);
@@ -256,13 +252,10 @@ public class SymbolTableConstructor implements Visitor {
     n.f16.accept(this);
     n.f17.accept(this);
 
-    // Pushing `String[] a` to the main class symbol table
-    //temp.myItems.put(Symbol.symbol(n.f11.f0.toString()), new ArrayBinder());
+    tempbook.methods.put(Symbol.symbol("main"), new MethodsBook());
 
-    temp.methods.put(Symbol.symbol("main"), new MethodsBook());
-
-    symbolTable.put(Symbol.symbol(classname(n)), temp);
-    currMethod = null;
+    symbolTable.put(Symbol.symbol(classname(n)), tempbook);
+    currentMethod = null;
   }
 
   /**
@@ -282,8 +275,8 @@ public class SymbolTableConstructor implements Visitor {
   * f5 -> "}"
   */
   public void visit(ClassDeclaration n) {
-    ClassBook temp = new ClassBook(classname(n));
-    currClass = temp;
+    ClassBook tempbook = new ClassBook(classname(n));
+    currentClass = tempbook;
 
     n.f0.accept(this);
     n.f1.accept(this);
@@ -292,8 +285,8 @@ public class SymbolTableConstructor implements Visitor {
     n.f4.accept(this);
     n.f5.accept(this);
 
-    symbolTable.put(Symbol.symbol(classname(n)), temp);
-    currMethod = null;
+    symbolTable.put(Symbol.symbol(classname(n)), tempbook);
+    currentMethod = null;
   }
 
   /**
@@ -307,8 +300,8 @@ public class SymbolTableConstructor implements Visitor {
   * f7 -> "}"
   */
   public void visit(ClassExtendsDeclaration n) {
-    ClassBook temp = new ClassBook(classname(n));
-    currClass = temp;
+    ClassBook tempbook = new ClassBook(classname(n));
+    currentClass = tempbook;
 
     n.f0.accept(this);
     n.f1.accept(this);
@@ -319,9 +312,9 @@ public class SymbolTableConstructor implements Visitor {
     n.f6.accept(this);
     n.f7.accept(this);
 
-    temp.parent = n.f3.f0.toString();
-    symbolTable.put(Symbol.symbol(classname(n)), temp);
-    currMethod = null;
+    tempbook.parent = n.f3.f0.toString();
+    symbolTable.put(Symbol.symbol(classname(n)), tempbook);
+    currentMethod = null;
   }
 
   /**
@@ -334,30 +327,30 @@ public class SymbolTableConstructor implements Visitor {
     n.f1.accept(this);
     n.f2.accept(this);
 
-    if (currMethod == null) {
-      if (currClass.myItems.alreadyExists(Symbol.symbol(idName(n.f1))))
-        RegTypeError();
+    if (currentMethod == null) {
+      if (currentClass.Items.alreadyEx(Symbol.symbol(idName(n.f1))))
+        TypeError();
 
       if (n.f0.f0.choice instanceof IntegerType)
-        currClass.myItems.put(Symbol.symbol(idName(n.f1)), new IntBook());
+        currentClass.Items.put(Symbol.symbol(idName(n.f1)), new IntBook());
       if (n.f0.f0.choice instanceof BooleanType)
-        currClass.myItems.put(Symbol.symbol(idName(n.f1)), new BoolBook());
+        currentClass.Items.put(Symbol.symbol(idName(n.f1)), new BoolBook());
       if (n.f0.f0.choice instanceof ArrayType)
-        currClass.myItems.put(Symbol.symbol(idName(n.f1)), new ArrayBook());
+        currentClass.Items.put(Symbol.symbol(idName(n.f1)), new ArrayBook());
       if (n.f0.f0.choice instanceof Identifier)
-        currClass.myItems.put(Symbol.symbol(idName(n.f1)), new ClassBook(((Identifier) n.f0.f0.choice).f0.toString()));
+        currentClass.Items.put(Symbol.symbol(idName(n.f1)), new ClassBook(((Identifier) n.f0.f0.choice).f0.toString()));
     } else {
-      if (currMethod.myItems.alreadyExists(Symbol.symbol(idName(n.f1))))
-        RegTypeError();
+      if (currentMethod.Items.alreadyEx(Symbol.symbol(idName(n.f1))))
+        TypeError();
 
       if (n.f0.f0.choice instanceof IntegerType)
-        currMethod.myItems.put(Symbol.symbol(idName(n.f1)), new IntBook());
+        currentMethod.Items.put(Symbol.symbol(idName(n.f1)), new IntBook());
       if (n.f0.f0.choice instanceof BooleanType)
-        currMethod.myItems.put(Symbol.symbol(idName(n.f1)), new BoolBook());
+        currentMethod.Items.put(Symbol.symbol(idName(n.f1)), new BoolBook());
       if (n.f0.f0.choice instanceof ArrayType)
-        currMethod.myItems.put(Symbol.symbol(idName(n.f1)), new ArrayBook());
+        currentMethod.Items.put(Symbol.symbol(idName(n.f1)), new ArrayBook());
       if (n.f0.f0.choice instanceof Identifier)
-        currMethod.myItems.put(Symbol.symbol(idName(n.f1)), new ClassBook(((Identifier) n.f0.f0.choice).f0.toString()));
+        currentMethod.Items.put(Symbol.symbol(idName(n.f1)), new ClassBook(((Identifier) n.f0.f0.choice).f0.toString()));
     }
   }
 
@@ -378,21 +371,19 @@ public class SymbolTableConstructor implements Visitor {
   */
   public void visit(MethodDeclaration n) {
 
-    MethodsBook temp = new MethodsBook();
-    currMethod = temp;
+    MethodsBook tempM = new MethodsBook();
+    currentMethod = tempM;
 
     if (n.f1.f0.choice instanceof IntegerType)
-      temp.type = new IntBook();
+      tempM.type = new IntBook();
     if (n.f1.f0.choice instanceof BooleanType)
-      temp.type = new BoolBook();
+      tempM.type = new BoolBook();
     if (n.f1.f0.choice instanceof ArrayType)
-      temp.type = new ArrayBook();
+      tempM.type = new ArrayBook();
     if (n.f1.f0.choice instanceof Identifier) {
-      /*
-        The return type of this function is the name of the id
-      */
-      temp.type = new ClassTypeBinder();
-      ((ClassTypeBinder) temp.type).classname = idName((Identifier) n.f1.f0.choice);
+
+      tempM.type = new ClassTypeBook();
+      ((ClassTypeBook) tempM.type).classname = idName((Identifier) n.f1.f0.choice);
     }
 
     n.f0.accept(this);
@@ -410,12 +401,12 @@ public class SymbolTableConstructor implements Visitor {
     n.f12.accept(this);
 
     if (n.f4.present()) {
-      temp.paramCount = ((FormalParameterList)(n.f4).node).f1.size();
+      tempM.paramNum = ((FormalParameterList)(n.f4).node).f1.size();
     } else {
-      temp.paramCount = 0;
+      tempM.paramNum = 0;
     }
 
-    currClass.methods.put(Symbol.symbol(methodname(n)), temp);
+    currentClass.methods.put(Symbol.symbol(methodname(n)), tempM);
   }
 
   /**
@@ -435,41 +426,41 @@ public class SymbolTableConstructor implements Visitor {
     n.f0.accept(this);
     n.f1.accept(this);
 
-    if (currMethod == null) {
-      if (currClass.myItems.alreadyExists(Symbol.symbol(idName(n.f1))))
-        RegTypeError();
+    if (currentMethod == null) {
+      if (currentClass.Items.alreadyEx(Symbol.symbol(idName(n.f1))))
+        TypeError();
 
       if (n.f0.f0.choice instanceof IntegerType)
-        currClass.myItems.put(Symbol.symbol(idName(n.f1)), new IntBook());
+        currentClass.Items.put(Symbol.symbol(idName(n.f1)), new IntBook());
       if (n.f0.f0.choice instanceof BooleanType)
-        currClass.myItems.put(Symbol.symbol(idName(n.f1)), new BoolBook());
+        currentClass.Items.put(Symbol.symbol(idName(n.f1)), new BoolBook());
       if (n.f0.f0.choice instanceof ArrayType)
-        currClass.myItems.put(Symbol.symbol(idName(n.f1)), new ArrayBook());
+        currentClass.Items.put(Symbol.symbol(idName(n.f1)), new ArrayBook());
       if (n.f0.f0.choice instanceof Identifier)
-        currClass.myItems.put(Symbol.symbol(idName(n.f1)), new ClassBook(((Identifier) n.f0.f0.choice).f0.toString()));
+        currentClass.Items.put(Symbol.symbol(idName(n.f1)), new ClassBook(((Identifier) n.f0.f0.choice).f0.toString()));
     } else {
-      if (currMethod.myItems.alreadyExists(Symbol.symbol(idName(n.f1))))
-        RegTypeError();
+      if (currentMethod.Items.alreadyEx(Symbol.symbol(idName(n.f1))))
+        TypeError();
 
       if (n.f0.f0.choice instanceof IntegerType) {
-        currMethod.myItems.put(Symbol.symbol(idName(n.f1)), new IntBook());
-        currMethod.paramTypes.add(CheckVisitor.IntTypeStr);
-        currMethod.params.add(idName(n.f1));
+        currentMethod.Items.put(Symbol.symbol(idName(n.f1)), new IntBook());
+        currentMethod.pTypes.add(CheckingVisitor.IntTypeStr);
+        currentMethod.params.add(idName(n.f1));
       }
       if (n.f0.f0.choice instanceof BooleanType) {
-        currMethod.myItems.put(Symbol.symbol(idName(n.f1)), new BoolBook());
-        currMethod.paramTypes.add(CheckVisitor.BoolTypeStr);
-        currMethod.params.add(idName(n.f1));
+        currentMethod.Items.put(Symbol.symbol(idName(n.f1)), new BoolBook());
+        currentMethod.pTypes.add(CheckingVisitor.BoolTypeStr);
+        currentMethod.params.add(idName(n.f1));
       }
       if (n.f0.f0.choice instanceof ArrayType) {
-        currMethod.myItems.put(Symbol.symbol(idName(n.f1)), new ArrayBook());
-        currMethod.paramTypes.add(CheckVisitor.ArrayTypeStr);
-        currMethod.params.add(idName(n.f1));
+        currentMethod.Items.put(Symbol.symbol(idName(n.f1)), new ArrayBook());
+        currentMethod.pTypes.add(CheckingVisitor.ArrayTypeStr);
+        currentMethod.params.add(idName(n.f1));
       }
       if (n.f0.f0.choice instanceof Identifier) {
-        currMethod.myItems.put(Symbol.symbol(idName(n.f1)), new ClassBook(((Identifier) n.f0.f0.choice).f0.toString()));
-        currMethod.paramTypes.add(((Identifier) n.f0.f0.choice).f0.toString());
-        currMethod.params.add(idName(n.f1));
+        currentMethod.Items.put(Symbol.symbol(idName(n.f1)), new ClassBook(((Identifier) n.f0.f0.choice).f0.toString()));
+        currentMethod.pTypes.add(((Identifier) n.f0.f0.choice).f0.toString());
+        currentMethod.params.add(idName(n.f1));
       }
     }
   }

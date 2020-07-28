@@ -6,18 +6,18 @@ import java.util.List;
 public class MethodsBook extends Book {
 
     public TypeBook type;
-    public int paramCount;
-    public List<String> paramTypes;
+    public int paramNum;
+    public List<String> pTypes;
     public List<String> params;
 
     public MethodsBook() {
-        paramTypes = new ArrayList<>();
+        pTypes = new ArrayList<>();
         params = new ArrayList<>();
     }
 
     public String getClassReturned() {
-        if (type instanceof ClassTypeBinder)
-            return ((ClassTypeBinder) type).classname;
+        if (type instanceof ClassTypeBook)
+            return ((ClassTypeBook) type).classname;
         return null;
     }
 }

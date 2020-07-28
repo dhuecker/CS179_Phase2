@@ -18,6 +18,6 @@ class ArrayBook extends TypeBook {
 
 }
 
-class ClassTypeBinder extends TypeBook {
+class ClassTypeBook extends TypeBook {
     String classname;
 }

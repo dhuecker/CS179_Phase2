@@ -3,21 +3,21 @@ package syntax_checker;
 import java.util.List;
 import java.util.ArrayList;
 
-class Bucket {
+class HashBucket {
     Symbol key;
-    Book binding;
-    Bucket next;
+    Book chain;
+    HashBucket another;
 
-    Bucket(Symbol k, Book b, Bucket n) {
-        key = k;
-        binding = b;
-        next = n;
+    HashBucket(Symbol a, Book b, HashBucket c) {
+        key = a;
+        chain = b;
+        another = c;
     }
 }
 
 class HashT {
-    final int SIZE = 256;
-    Bucket table[] = new Bucket[SIZE];
+    final int MAX = 256;
+    HashBucket table[] = new HashBucket[MAX];
 
     private int hash(Symbol k) {
         String s = k.toString();
@@ -28,17 +28,17 @@ class HashT {
     }
 
     void insert(Symbol s, Book b) {
-        int index=hash(s)%SIZE;
+        int index=hash(s)%MAX;
         index = (index < 0) ? index*-1 : index;
-        table[index] = new Bucket(s, b, table[index]);
+        table[index] = new HashBucket(s, b, table[index]);
     }
 
     Book lookup(Symbol s) {
-        int index=hash(s)%SIZE;
+        int index=hash(s)%MAX;
         index = (index < 0) ? index*-1 : index;
-        for (Bucket b = table[index]; b != null; b = b.next) {
+        for (HashBucket b = table[index]; b != null; b = b.another) {
             if (s.eq(b.key)) {
-                return b.binding;
+                return b.chain;
             }
         }
 
@@ -46,58 +46,58 @@ class HashT {
     }
 
     void pop(Symbol s) {
-        int index = hash(s)%SIZE;
-        table[index] = table[index].next;
+        int index = hash(s)%MAX;
+        table[index] = table[index].another;
     }
 
     public void print() {
         for (int i = 0; i < table.length; i++) {
-            Bucket curr = table[i];
-            while (curr != null) {
-                System.out.println(curr.key.toString());
-                curr = curr.next;
+            HashBucket current = table[i];
+            while (current != null) {
+                System.out.println(current.key.toString());
+                current = current.another;
             }
         }
     }
 
     public List<String> getAllItems() {
-        List<String> items = new ArrayList<>();
+        List<String> temp = new ArrayList<>();
         for (int i = 0; i < table.length; i++) {
-            Bucket curr = table[i];
-            while (curr != null) {
-                items.add(curr.key.toString());
-                curr = curr.next;
+            HashBucket current = table[i];
+            while (current != null) {
+                temp.add(current.key.toString());
+                current = current.another;
             }
         }
-        return items;
+        return temp;
     }
 }
 
 public class SymbolTable {
 
-    HashT hashT;
+    HashT hashTable;
 
     public SymbolTable() {
-        hashT = new HashT();
+        hashTable   = new HashT();
     }
 
     public void put(Symbol key, Book value) {
-        hashT.insert(key, value);
+        hashTable.insert(key, value);
     }
 
     public Book get(Symbol key) {
-        return hashT.lookup(key);
+        return hashTable.lookup(key);
     }
 
-    public boolean alreadyExists(Symbol key) {
+    public boolean alreadyEx(Symbol key) {
         return !(get(key) == null);
     }
 
     public void print() {
-        hashT.print();
+        hashTable.print();
     }
 
     public List<String> getItems() {
-        return hashT.getAllItems();
+        return hashTable.getAllItems();
     }
 }

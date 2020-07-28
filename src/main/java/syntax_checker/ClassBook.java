@@ -8,27 +8,29 @@ public class ClassBook extends Book {
     public SymbolTable methods;
     public String parent;
 
-    public ClassBook(String c) {
-        classname = c;
+    public ClassBook(String cname) {
+        classname = cname;
         methods = new SymbolTable();
     }
 
-    public String getIdType(String id, String currMethod) {
-        List<String> params = myItems.getItems();
-        if (params.contains(id)) {
-            ClassBook cb = (ClassBook) myItems.get(Symbol.symbol(id));
-            return cb.classname;
-        }
-        List<String> methodNames = methods.getItems();
-        if (methodNames.contains(currMethod)) {
-            MethodsBook mb = (MethodsBook) methods.get(Symbol.symbol(currMethod));
+    //added getIdType for phase2
 
-            if (mb.myItems.get(Symbol.symbol(id)) != null)
-                return ((ClassBook) mb.myItems.get(Symbol.symbol(id))).classname;
+    public String getIdType(String tempId, String currentMethod) {
+        List<String> params = Items.getItems();
+        if (params.contains(tempId)) {
+            ClassBook cbook = (ClassBook) Items.get(Symbol.symbol(tempId));
+            return cbook.classname;
+        }
+        List<String> mNames = methods.getItems();
+        if (mNames.contains(currentMethod)) {
+            MethodsBook mbook = (MethodsBook) methods.get(Symbol.symbol(currentMethod));
+
+            if (mbook.Items.get(Symbol.symbol(tempId)) != null)
+                return ((ClassBook) mbook.Items.get(Symbol.symbol(tempId))).classname;
             else {
-                for (int i = 0; i < mb.params.size(); i++) {
-                    if (mb.params.get(i).equals(id)) {
-                        return mb.paramTypes.get(i);
+                for (int a = 0; a < mbook.params.size(); a++) {
+                    if (mbook.params.get(a).equals(tempId)) {
+                        return mbook.pTypes.get(a);
                     }
                 }
             }

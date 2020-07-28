@@ -17,7 +17,7 @@ public class Typecheck {
     // Set up data
     symbolTable = new SymbolTable();
     SymbolTableConstructor firstVisitor = new SymbolTableConstructor();
-    CheckVisitor<String> secondVisitor = new CheckVisitor<>();
+    CheckingVisitor<String> secondVisitor = new CheckingVisitor<>();
 
     /*
       Use this so automatic testing works
@@ -37,14 +37,14 @@ public class Typecheck {
 
       // Check to make sure class refs are not circular
       Graph classGraph = new Graph();
-      List<String> classes = symbolTable.hashT.getAllItems();
+      List<String> classes = symbolTable.hashTable.getAllItems();
       for (int i = 0; i < classes.size(); i++) {
         ClassBook cb = (ClassBook) symbolTable.get(Symbol.symbol(classes.get(i)));
         classGraph.addEdge(cb.parent, classes.get(i));
       }
 
       if (!classGraph.acyclic()) {
-        firstVisitor.foundError = true;
+        firstVisitor.errorFound = true;
       } else {
 
         // Second pass
@@ -60,7 +60,7 @@ public class Typecheck {
     }
 
     // If the program makes it this far, it is correct
-    if (!firstVisitor.foundError && !secondVisitor.foundError) {
+    if (!firstVisitor.errorFound && !secondVisitor.errorFound) {
       //System.out.println("Program type checked successfully");
       return true;
     }
