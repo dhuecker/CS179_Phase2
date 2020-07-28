@@ -41,7 +41,7 @@
 </td>
 <td>
 <div class="infoBox" id="duration">
-<div class="counter">0.142s</div>
+<div class="counter">0.061s</div>
 <p>duration</p>
 </div>
 </td>
@@ -70,269 +70,25 @@
 <div id="tab0" class="tab">
 <h2>Failed tests</h2>
 <div class="test">
-<a name="bubbleSort"></a>
-<h3 class="failures">bubbleSort</h3>
+<a name="addTest"></a>
+<h3 class="failures">addTest</h3>
 <span class="code">
-<pre>org.junit.ComparisonFailure: expected:&lt;[]&gt; but was:&lt;[const BubbleSort_vtable
+<pre>org.junit.ComparisonFailure: expected:&lt;[]&gt; but was:&lt;[const Main_vtable
   :Main
 
-const BubbleSort
-  :BubbleSort_vtable
-
-const BBS_vtable
-  :BBS_Init
-  :BBS_Start
-  :BBS_Sort
-  :BBS_Print
-
-const BBS
-  :BBS_vtable
+const Main_Class
+  :Main_vtable
 
 func Main()
-  t.0 = HeapAllocZ(12)
-  [t.0] = :BBS
-  t.1 = [t.0]
-  t.1 = [t.1]
-  t.1 = [t.1 + 4]
-  t.2 = call t.1(t.0 10 )
-  PrintIntS(t.2)
+  t.0 = Add(12 21)
+  PrintIntS(t.0)
   ret
-
-func BBS_Start(this sz)
-  t.5 = [this]
-  t.5 = [t.5]
-  t.5 = [t.5 + 0]
-  t.4 = call t.5(this sz )
-  aux01 = t.4
-  t.8 = [this]
-  t.8 = [t.8]
-  t.8 = [t.8 + 12]
-  t.7 = call t.8(this)
-  aux01 = t.7
-  PrintIntS(99999)
-  t.11 = [this]
-  t.11 = [t.11]
-  t.11 = [t.11 + 8]
-  t.10 = call t.11(this)
-  aux01 = t.10
-  t.14 = [this]
-  t.14 = [t.14]
-  t.14 = [t.14 + 12]
-  t.13 = call t.14(this)
-  aux01 = t.13
-  ret 0
-
-func BBS_Sort(this)
-  t.15 = [this + 4]
-  t.16 = Sub(t.15 1)
-  i = t.16
-  t.17 = Sub(0 1)
-  aux02 = t.17
-  l.0:
-    t.18 = LtS(aux02 i)
-    if0 t.18 goto :l.1
-    j = 1
-    l.2:
-      t.19 = Add(i 1)
-      t.20 = LtS(j t.19)
-      if0 t.20 goto :l.3
-      t.21 = Sub(j 1)
-      aux07 = t.21
-      t.23 = aux07
-      t.25 = [this + 8]
-      t.24 = [t.25]
-      ok = LtS(t.23 t.24)
-      if ok goto :l.4
-      Error(&quot;array index out of bounds&quot;)
-      l.4:
-      ok = LtS(-1 aux07)
-      if ok goto :l.5
-      Error(&quot;array index out of bounds&quot;)
-      l.5:
-      t.23 = MulS(aux07 4)
-      t.23 = Add(t.25 t.23)
-      t.23 = Add(t.23 4)
-      t.22 = [t.23]
-      aux04 = t.22
-      t.27 = j
-      t.29 = [this + 8]
-      t.28 = [t.29]
-      ok = LtS(t.27 t.28)
-      if ok goto :l.6
-      Error(&quot;array index out of bounds&quot;)
-      l.6:
-      ok = LtS(-1 j)
-      if ok goto :l.7
-      Error(&quot;array index out of bounds&quot;)
-      l.7:
-      t.27 = MulS(j 4)
-      t.27 = Add(t.29 t.27)
-      t.27 = Add(t.27 4)
-      t.26 = [t.27]
-      aux05 = t.26
-      t.30 = LtS(aux05 aux04)
-      if0 t.30 goto :l.8
-        t.31 = Sub(j 1)
-        aux06 = t.31
-        t.33 = aux06
-        t.35 = [this + 8]
-        t.34 = [t.35]
-        ok = LtS(t.33 t.34)
-        if ok goto :l.10
-        Error(&quot;array index out of bounds&quot;)
-        l.10:
-        ok = LtS(-1 aux06)
-        if ok goto :l.11
-        Error(&quot;array index out of bounds&quot;)
-        l.11:
-        t.33 = MulS(aux06 4)
-        t.33 = Add(t.35 t.33)
-        t.33 = Add(t.33 4)
-        t.32 = [t.33]
-        t = t.32
-        t.37 = j
-        t.39 = [this + 8]
-        t.38 = [t.39]
-        ok = LtS(t.37 t.38)
-        if ok goto :l.12
-        Error(&quot;array index out of bounds&quot;)
-        l.12:
-        ok = LtS(-1 j)
-        if ok goto :l.13
-        Error(&quot;array index out of bounds&quot;)
-        l.13:
-        t.37 = MulS(j 4)
-        t.37 = Add(t.39 t.37)
-        t.37 = Add(t.37 4)
-        t.36 = [t.37]
-        t.40 = Add(this 8)
-        t.40 = [t.40]
-        t.41 = MulS(aux06 4)
-        t.42 = Add(t.40 t.41)
-        t.42 = Add(t.42 4)
-        [t.42] = t.36
-        t.43 = Add(this 8)
-        t.43 = [t.43]
-        t.44 = MulS(j 4)
-        t.45 = Add(t.43 t.44)
-        t.45 = Add(t.45 4)
-        [t.45] = t
-        goto :l.9
-      l.8:
-        nt = 0
-      l.9:
-      t.46 = Add(j 1)
-      j = t.46
-    goto :l.2
-    l.3:
-    t.47 = Sub(i 1)
-    i = t.47
-  goto :l.0
-  l.1:
-  ret 0
-
-func BBS_Print(this)
-  j = 0
-  l.14:
-    t.48 = [this + 4]
-    t.49 = LtS(j t.48)
-    if0 t.49 goto :l.15
-    t.51 = j
-    t.53 = [this + 8]
-    t.52 = [t.53]
-    ok = LtS(t.51 t.52)
-    if ok goto :l.16
-    Error(&quot;array index out of bounds&quot;)
-    l.16:
-    ok = LtS(-1 j)
-    if ok goto :l.17
-    Error(&quot;array index out of bounds&quot;)
-    l.17:
-    t.51 = MulS(j 4)
-    t.51 = Add(t.53 t.51)
-    t.51 = Add(t.51 4)
-    t.50 = [t.51]
-    PrintIntS(t.50)
-    t.54 = Add(j 1)
-    j = t.54
-  goto :l.14
-  l.15:
-  ret 0
-
-func BBS_Init(this sz)
-  [this + 4] = sz
-  t.56 = MulS(sz 4)
-  t.56 = Add(t.56 4)
-  t.55 = HeapAllocZ(t.56)
-  [t.55] = sz
-  [this + 8] = t.55
-  t.57 = Add(this 8)
-  t.57 = [t.57]
-  t.58 = MulS(0 4)
-  t.59 = Add(t.57 t.58)
-  t.59 = Add(t.59 4)
-  [t.59] = 20
-  t.60 = Add(this 8)
-  t.60 = [t.60]
-  t.61 = MulS(1 4)
-  t.62 = Add(t.60 t.61)
-  t.62 = Add(t.62 4)
-  [t.62] = 7
-  t.63 = Add(this 8)
-  t.63 = [t.63]
-  t.64 = MulS(2 4)
-  t.65 = Add(t.63 t.64)
-  t.65 = Add(t.65 4)
-  [t.65] = 12
-  t.66 = Add(this 8)
-  t.66 = [t.66]
-  t.67 = MulS(3 4)
-  t.68 = Add(t.66 t.67)
-  t.68 = Add(t.68 4)
-  [t.68] = 18
-  t.69 = Add(this 8)
-  t.69 = [t.69]
-  t.70 = MulS(4 4)
-  t.71 = Add(t.69 t.70)
-  t.71 = Add(t.71 4)
-  [t.71] = 2
-  t.72 = Add(this 8)
-  t.72 = [t.72]
-  t.73 = MulS(5 4)
-  t.74 = Add(t.72 t.73)
-  t.74 = Add(t.74 4)
-  [t.74] = 11
-  t.75 = Add(this 8)
-  t.75 = [t.75]
-  t.76 = MulS(6 4)
-  t.77 = Add(t.75 t.76)
-  t.77 = Add(t.77 4)
-  [t.77] = 6
-  t.78 = Add(this 8)
-  t.78 = [t.78]
-  t.79 = MulS(7 4)
-  t.80 = Add(t.78 t.79)
-  t.80 = Add(t.80 4)
-  [t.80] = 9
-  t.81 = Add(this 8)
-  t.81 = [t.81]
-  t.82 = MulS(8 4)
-  t.83 = Add(t.81 t.82)
-  t.83 = Add(t.83 4)
-  [t.83] = 19
-  t.84 = Add(this 8)
-  t.84 = [t.84]
-  t.85 = MulS(9 4)
-  t.86 = Add(t.84 t.85)
-  t.86 = Add(t.86 4)
-  [t.86] = 5
-  ret 0
 
 
 ]&gt;
 	at org.junit.Assert.assertEquals(Assert.java:115)
 	at org.junit.Assert.assertEquals(Assert.java:144)
-	at vapor_code_gen.J2VTest.bubbleSort(J2VTest.java:56)
+	at vapor_code_gen.J2VTest.addTest(J2VTest.java:44)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
 	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
@@ -395,8 +151,8 @@ func BBS_Init(this sz)
 </tr>
 </thead>
 <tr>
-<td class="failures">bubbleSort</td>
-<td class="failures">0.142s</td>
+<td class="failures">addTest</td>
+<td class="failures">0.061s</td>
 <td class="failures">failed</td>
 </tr>
 </table>
@@ -409,7 +165,7 @@ func BBS_Init(this sz)
 <input id="line-wrapping-toggle" type="checkbox" autocomplete="off"/>
 </label>
 </div>Generated by 
-<a href="http://www.gradle.org">Gradle 5.6.4</a> at Jul 27, 2020, 7:37:21 PM</p>
+<a href="http://www.gradle.org">Gradle 5.6.4</a> at Jul 27, 2020, 7:50:26 PM</p>
 </div>
 </div>
 </body>
