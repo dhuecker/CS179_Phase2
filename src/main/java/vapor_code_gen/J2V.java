@@ -19,58 +19,51 @@ public class J2V {
             // Program is not valid
             // Do not proceed further
         } else {
-            // Construct a class graph
+
             ClassGraph tempCG = new ClassGraph();
-            Iterator<String> newClasses = Typecheck.sTable.getItems().iterator();
-            while (newClasses.hasNext()) {
-                String currentClassname = newClasses.next();
+            Iterator<String> classIt = Typecheck.sTable.getItems().iterator();
+            while (classIt.hasNext()) {
+                String currentClassname = classIt.next();
                 ClassBook currentClassTemp = (ClassBook) Typecheck.sTable.get(Symbol.symbol(currentClassname));
 
                 tempCG.addEdge(currentClassname, currentClassTemp.parent);
             }
 
-            // Construct class records
             classRecordKeepers = new ArrayList<>();
 
-            // Topologically sort class graph
-            Iterator<String> classesTemp = tempCG.topologicalSort().iterator();
-            while(classesTemp.hasNext()) {
-                String currentClassname = classesTemp.next();
+            Iterator<String> cTempIt = tempCG.topologicalSort().iterator();
+            while(cTempIt.hasNext()) {
+                String currentClassname = cTempIt.next();
 
                 ClassBook currentClassTemp = (ClassBook) Typecheck.sTable.get(Symbol.symbol(currentClassname));
 
                 ClassRecordKeeper currentRecordTemp = new ClassRecordKeeper(currentClassname);
                 classRecordKeepers.add(currentRecordTemp);
 
-                // Fields from parent classes
-                // If topo-sort works, then the parent's CR should already contain the data
                 if (currentClassTemp.parent != null) {
                     currentRecordTemp.copyFieldsFrom(findClassRecord(currentClassTemp.parent));
                 }
 
-                // Explicit fields
-                Iterator<String> fields = currentClassTemp.Items.getItems().iterator();
-                while (fields.hasNext()) {
-                    currentRecordTemp.addField(fields.next());
+
+                Iterator<String> fieldsIt = currentClassTemp.Items.getItems().iterator();
+                while (fieldsIt.hasNext()) {
+                    currentRecordTemp.addField(fieldsIt.next());
                 }
 
-                Iterator<String> methods = currentClassTemp.methods.getItems().iterator();
-                while (methods.hasNext()) {
-                    String currentMethod = methods.next();
+                Iterator<String> methodsIt = currentClassTemp.methods.getItems().iterator();
+                while (methodsIt.hasNext()) {
+                    String currentMethod = methodsIt.next();
                     String fName = currentClassname + "_" + currentMethod;
 
                     currentRecordTemp.v_table.addFunction(fName);
                 }
             }
 
-            // Puts the v_tables and class records into a text buffer
             genv.setupTables(classRecordKeepers);
-
-            // Get ready for another round of visitors
             VaporGenVisitor<String, String> vapVis = new VaporGenVisitor<>();
-            vapVis.genvap = genv; // Pass the code buffer to the VaporVisitor
+            vapVis.genvap = genv;
+
             try {
-                //Goal root = parser.Goal();
                 Typecheck.root.accept(vapVis, "");
             } catch (Exception e) {
                 System.out.println("ERROR: " + e);
@@ -86,9 +79,9 @@ public class J2V {
     }
 
     static ClassRecordKeeper findClassRecord(String name) {
-        Iterator<ClassRecordKeeper> tempIterator = classRecordKeepers.iterator();
-        while (tempIterator.hasNext()) {
-            ClassRecordKeeper current = tempIterator.next();
+        Iterator<ClassRecordKeeper> tempIt = classRecordKeepers.iterator();
+        while (tempIt.hasNext()) {
+            ClassRecordKeeper current = tempIt.next();
             if (current.cname.equals(name))
                 return current;
         }
@@ -97,24 +90,24 @@ public class J2V {
     }
 
     static void inspectCRK() {
-        // Inspect ClassRecords
-        Iterator<ClassRecordKeeper> IteratorTemp = classRecordKeepers.iterator();
-        while (IteratorTemp.hasNext()) {
-            ClassRecordKeeper current = IteratorTemp.next();
+
+        Iterator<ClassRecordKeeper> ItTemp = classRecordKeepers.iterator();
+        while (ItTemp.hasNext()) {
+            ClassRecordKeeper current = ItTemp.next();
             System.out.println(current.cname);
 
             System.out.println("FIELDS");
 
-            Iterator<String> fields = current.fields.iterator();
-            while (fields.hasNext()) {
-                System.out.println("     " + fields.next());
+            Iterator<String> fieldsIt = current.fields.iterator();
+            while (fieldsIt.hasNext()) {
+                System.out.println("     " + fieldsIt.next());
             }
 
             System.out.println("METHODS");
 
-            Iterator<String> methods = current.v_table.functions.iterator();
-            while (methods.hasNext()) {
-                System.out.println("     " + methods.next());
+            Iterator<String> methodsIt = current.v_table.functions.iterator();
+            while (methodsIt.hasNext()) {
+                System.out.println("     " + methodsIt.next());
             }
         }
     }
