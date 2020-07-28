@@ -46,11 +46,11 @@ public class Typecheck {
 
     // If the program makes it this far, it is correct
     if (!oneVisitor.errorFound && !twoVisitor.errorFound) {
-      System.out.println("Program type checked successfully");
+      //System.out.println("Program type checked successfully");
       return true;
     }
     else {
-      System.out.println("Type error");
+      //System.out.println("Type error");
       return false;
     }
   }
