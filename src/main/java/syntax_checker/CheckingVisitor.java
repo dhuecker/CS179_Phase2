@@ -538,18 +538,17 @@ CheckingVisitor<R> implements GJNoArguVisitor<R> {
         String expType = (String) n.f2.accept(this);
         n.f3.accept(this);
 
-        // Does f0 identifier exist in the symbol table?
-        Book tempMethodId = null;
+        //check here
+        Book tempMId = null;
         if (currentMethod != null)
-            tempMethodId = currentMethod.Items.get(Symbol.symbol(n.f0.f0.toString()));
-        Book tempClassId = currentClass.Items.get(Symbol.symbol(n.f0.f0.toString()));
+            tempMId = currentMethod.Items.get(Symbol.symbol(n.f0.f0.toString()));
+        Book tempCId = currentClass.Items.get(Symbol.symbol(n.f0.f0.toString()));
 
-        if (tempMethodId == null && tempClassId == null) {
+        if (tempMId == null && tempCId == null) {
             TypeError();
         }
 
-        // Do both sides of the assignment type check
-        Book temp = (tempMethodId != null) ? tempMethodId : tempClassId;
+        Book temp = (tempMId != null) ? tempMId : tempCId;
         String idType = "";
         if (temp instanceof IntBook) {
             idType = IntTypeStr;
@@ -567,9 +566,7 @@ CheckingVisitor<R> implements GJNoArguVisitor<R> {
             idType = ((ClassBook) temp).classname;
         }
 
-        // Is it a correct type, or is a subtype?
-        if (expType == null ||
-                (!expType.equals(idType) && !isSubType(idType, expType))) {
+        if (expType == null || (!expType.equals(idType) && !isSubType(idType, expType))) {
 
             TypeError();
         }
@@ -621,13 +618,13 @@ CheckingVisitor<R> implements GJNoArguVisitor<R> {
         R _ret=null;
         n.f0.accept(this);
         n.f1.accept(this);
-        R exp = n.f2.accept(this);
+        R express = n.f2.accept(this);
         n.f3.accept(this);
         n.f4.accept(this);
         n.f5.accept(this);
         n.f6.accept(this);
 
-        if (!exp.equals(BoolTypeStr))
+        if (!express.equals(BoolTypeStr))
             TypeError();
 
         return _ret;
@@ -644,11 +641,11 @@ CheckingVisitor<R> implements GJNoArguVisitor<R> {
         R _ret=null;
         n.f0.accept(this);
         n.f1.accept(this);
-        R exp = n.f2.accept(this);
+        R express = n.f2.accept(this);
         n.f3.accept(this);
         n.f4.accept(this);
 
-        if (!exp.equals(BoolTypeStr))
+        if (!express.equals(BoolTypeStr))
             TypeError();
 
         return _ret;
@@ -665,11 +662,11 @@ CheckingVisitor<R> implements GJNoArguVisitor<R> {
         R _ret=null;
         n.f0.accept(this);
         n.f1.accept(this);
-        R exp = n.f2.accept(this);
+        R express = n.f2.accept(this);
         n.f3.accept(this);
         n.f4.accept(this);
 
-        if (exp == null || !exp.equals(IntTypeStr))
+        if (express == null || !express.equals(IntTypeStr))
             TypeError();
 
         return _ret;
@@ -699,15 +696,15 @@ CheckingVisitor<R> implements GJNoArguVisitor<R> {
      */
     public R visit(AndExpression n) {
         R _ret=null;
-        R rhs = n.f0.accept(this);
+        R RHS = n.f0.accept(this);
         n.f1.accept(this);
-        R lhs = n.f2.accept(this);
+        R LHS = n.f2.accept(this);
 
-        if (!rhs.equals(lhs) || !rhs.equals(BoolTypeStr) || !lhs.equals(BoolTypeStr)) {
+        if (!RHS.equals(LHS) || !RHS.equals(BoolTypeStr) || !LHS.equals(BoolTypeStr)) {
             TypeError();
         }
 
-        _ret = rhs;
+        _ret = RHS;
         return _ret;
     }
 
@@ -738,15 +735,15 @@ CheckingVisitor<R> implements GJNoArguVisitor<R> {
      */
     public R visit(PlusExpression n) {
         R _ret=null;
-        R rhs = n.f0.accept(this);
+        R RHS = n.f0.accept(this);
         n.f1.accept(this);
-        R lhs = n.f2.accept(this);
+        R LHS = n.f2.accept(this);
 
-        if (!rhs.equals(lhs) || !rhs.equals(IntTypeStr) || !lhs.equals(IntTypeStr)) {
+        if (!RHS.equals(LHS) || !RHS.equals(IntTypeStr) || !LHS.equals(IntTypeStr)) {
             TypeError();
         }
 
-        _ret = rhs;
+        _ret = RHS;
         return _ret;
     }
 
@@ -798,12 +795,12 @@ CheckingVisitor<R> implements GJNoArguVisitor<R> {
      */
     public R visit(ArrayLookup n) {
         R _ret=null;
-        R arr_exp = n.f0.accept(this);
+        R arr_express = n.f0.accept(this);
         n.f1.accept(this);
-        R index_exp = n.f2.accept(this);
+        R index_express = n.f2.accept(this);
         n.f3.accept(this);
 
-        if (!arr_exp.equals(ArrayTypeStr) || !index_exp.equals(IntTypeStr))
+        if (!arr_express.equals(ArrayTypeStr) || !index_express.equals(IntTypeStr))
             TypeError();
 
         _ret = (R)IntTypeStr;
@@ -837,30 +834,30 @@ CheckingVisitor<R> implements GJNoArguVisitor<R> {
      */
     public R visit(MessageSend n) {
         R _ret=null;
-        String cc = (String) n.f0.accept(this);
+        String temp = (String) n.f0.accept(this);
         n.f1.accept(this);
         n.f2.accept(this);
         n.f3.accept(this);
         n.f4.accept(this);
         n.f5.accept(this);
 
-        if (cc == null) {
+        if (temp == null) {
             TypeError();
             return null;
         }
 
-        // Does method exist in the class?
-        ClassBook cb = (ClassBook) symbolTable.get(Symbol.symbol(cc));
-        MethodsBook mb = (MethodsBook) cb.methods.get(Symbol.symbol(n.f2.f0.toString()));
+        // Does method exist
+        ClassBook cbook = (ClassBook) symbolTable.get(Symbol.symbol(temp));
+        MethodsBook mbook = (MethodsBook) cbook.methods.get(Symbol.symbol(n.f2.f0.toString()));
 
-        // Check superclasses for the method
-        if (mb == null) {
-            ClassBook tempCb = cb;
+        // Check
+        if (mbook == null) {
+            ClassBook tempCb = cbook;
             while (tempCb != null) {
                 MethodsBook tempMb = (MethodsBook) tempCb.methods.get(Symbol.symbol(n.f2.f0.toString()));
 
                 if (tempMb != null) {
-                    mb = tempMb;
+                    mbook = tempMb;
                     break;
                 }
 
@@ -873,26 +870,26 @@ CheckingVisitor<R> implements GJNoArguVisitor<R> {
             }
         }
 
-        if (mb == null) {
+        if (mbook == null) {
             TypeError();
             return null;
         }
 
         if (n.f4.present()) {
-            // Does the expression list have the correct length?
-            if (mb.paramNum != ((ExpressionList) n.f4.node).f1.size()) {
+
+            if (mbook.paramNum != ((ExpressionList) n.f4.node).f1.size()) {
                 TypeError();
             }
 
             // Are the variables in the expressions the expected types?
-            if (!((ExpressionList) n.f4.node).f0.accept(this).equals(mb.pTypes.get(0)) && mb.paramNum != 0) {
+            if (!((ExpressionList) n.f4.node).f0.accept(this).equals(mbook.pTypes.get(0)) && mbook.paramNum != 0) {
                 TypeError();
             }
 
             for (int i = 0; i < ((ExpressionList) n.f4.node).f1.size(); i++) {
                 String currExpType = (String)((ExpressionList) n.f4.node).f1.elementAt(i).accept(this);
-                if (!currExpType.equals(mb.pTypes.get(i+1))
-                        && !isSubType(mb.pTypes.get(i+1), currExpType)
+                if (!currExpType.equals(mbook.pTypes.get(i+1))
+                        && !isSubType(mbook.pTypes.get(i+1), currExpType)
                 ) {
 
                     TypeError();
@@ -900,20 +897,20 @@ CheckingVisitor<R> implements GJNoArguVisitor<R> {
             }
         }
 
-        if (mb.type instanceof IntBook) {
+        if (mbook.type instanceof IntBook) {
             _ret = (R) IntTypeStr;
         }
 
-        if (mb.type instanceof BoolBook) {
+        if (mbook.type instanceof BoolBook) {
             _ret = (R) BoolTypeStr;
         }
 
-        if (mb.type instanceof ArrayBook) {
+        if (mbook.type instanceof ArrayBook) {
             _ret = (R) ArrayTypeStr;
         }
 
-        if (mb.type instanceof ClassTypeBook) {
-            _ret = (R)((ClassTypeBook) mb.type).classname;
+        if (mbook.type instanceof ClassTypeBook) {
+            _ret = (R)((ClassTypeBook) mbook.type).classname;
         }
 
         return _ret;
@@ -925,10 +922,8 @@ CheckingVisitor<R> implements GJNoArguVisitor<R> {
      */
     public R visit(ExpressionList n) {
         R _ret=null;
-
         n.f0.accept(this);
         n.f1.accept(this);
-
         return _ret;
     }
 
@@ -939,9 +934,9 @@ CheckingVisitor<R> implements GJNoArguVisitor<R> {
     public R visit(ExpressionRest n) {
         R _ret=null;
         n.f0.accept(this);
-        R exp = n.f1.accept(this);
+        R express = n.f1.accept(this);
 
-        _ret = exp;
+        _ret = express;
 
         return _ret;
     }
@@ -1049,13 +1044,12 @@ CheckingVisitor<R> implements GJNoArguVisitor<R> {
         R _ret=null;
         n.f0.accept(this);
 
-        String currClassname = currentClass.classname;
+        String currCname = currentClass.classname;
 
-        // Does the class actually exist in the symbol table?
-        if (symbolTable.get(Symbol.symbol(currClassname)) == null)
+        if (symbolTable.get(Symbol.symbol(currCname)) == null)
             TypeError();
 
-        _ret = (R)currClassname;
+        _ret = (R)currCname;
 
         return _ret;
     }
@@ -1093,18 +1087,14 @@ CheckingVisitor<R> implements GJNoArguVisitor<R> {
         n.f2.accept(this);
         n.f3.accept(this);
 
-        /*
-            Creating a new class instance
-            Does it exist in the symbol table?
-        */
-        ClassBook newClass = (ClassBook) symbolTable.get(Symbol.symbol(n.f1.f0.toString()));
-        if (newClass == null) {
+        ClassBook tempClassb = (ClassBook) symbolTable.get(Symbol.symbol(n.f1.f0.toString()));
+        if (tempClassb == null) {
             TypeError();
 
             return null;
         }
 
-        _ret = (R)newClass.classname;
+        _ret = (R)tempClassb.classname;
 
         return _ret;
     }

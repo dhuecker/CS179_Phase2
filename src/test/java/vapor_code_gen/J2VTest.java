@@ -36,8 +36,7 @@ public class J2VTest {
         return tempOut.toString();
     }
 
-
-
+    //Test cases below for each input file given for phase 2
     @Test
     public void addTest() throws IOException {
         // PASSES
@@ -114,30 +113,6 @@ public class J2VTest {
     public void varsTest() throws IOException {
         // PASSES
         assertEquals("", testFile("Vars.java"));
-    }
-
-    @Test
-    public void paramAccess() throws IOException {
-        // PASSES
-        assertEquals("a", testFile("ParamAccess.java"));
-    }
-
-    @Test
-    public void functionCallTest() throws IOException {
-        // PASSES
-        assertEquals("a", testFile("FunctionCall.java"));
-    }
-
-    @Test
-    public void boolFuncTest() throws IOException {
-        // PASSES
-        assertEquals("a", testFile("BoolFunc.java"));
-    }
-
-    @Test
-    public void arrLengthTest() throws IOException {
-        // PASSES
-        assertEquals("a", testFile("ArrayLength.java"));
     }
 
 }

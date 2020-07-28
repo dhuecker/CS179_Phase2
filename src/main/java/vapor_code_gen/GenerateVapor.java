@@ -67,7 +67,6 @@ public class  GenerateVapor {
 
         increaseIndent();
 
-        // Function pointers
         Iterator<String> funcTemp = vtab.functions.iterator();
         while (funcTemp.hasNext()) {
             String funcName = funcTemp.next();

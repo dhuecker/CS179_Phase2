@@ -9,39 +9,29 @@ import java.util.Scanner;
 import static org.junit.Assert.*;
 
 
-
-/*
-Your main file should be called Typecheck.java, and if P.java contains a program to be type checked, then:
-
-java Typecheck < P.java
-
-should print either Program type checked successfully or Type error.
- */
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TypecheckTest {
     void passFileToMain(String name) throws IOException {
         String[] args = null;
-        final InputStream original = System.in;
+        final InputStream og = System.in;
         try {
-            final FileInputStream fips = new FileInputStream(new File("src/test/resources/input_files/" + name));
-            System.setIn(fips);
+            final FileInputStream finput = new FileInputStream(new File("src/test/resources/input_files/" + name));
+            System.setIn(finput);
             Typecheck.typeCheck();
-            fips.close();
+            finput.close();
         } finally {
-            System.setIn(original);
+            System.setIn(og);
         }
     }
 
     String testFile(String name) throws IOException {
         // Setup
-        final PrintStream originalOut = System.out;
+        final PrintStream ogOut = System.out;
         final ByteArrayOutputStream myOut = new ByteArrayOutputStream();
         System.setOut(new PrintStream(myOut));
 
         passFileToMain(name);
-
-        // Clean up
-        System.setOut(originalOut);
+        System.setOut(ogOut);
         myOut.close();
 
         return myOut.toString();
@@ -137,33 +127,4 @@ public class TypecheckTest {
         assertEquals(testFile("TreeVisitor-error.java"), "Type error\n");
     }
 
-    @Test
-    public void wrongParamsError() throws IOException {
-        assertEquals(testFile("WrongParams.java"), "Type error\n");
-    }
-
-    @Test
-    public void complexParams() throws IOException {
-        assertEquals(testFile("ComplexParams.java"), "Program type checked successfully\n");
-    }
-
-    @Test
-    public void complexParamsError() throws IOException {
-        assertEquals(testFile("ComplexParams-error.java"), "Type error\n");
-    }
-
-    @Test
-    public void subtypeAssign() throws IOException {
-        assertEquals(testFile("SubTypeAssign.java"), "Program type checked successfully\n");
-    }
-
-    @Test
-    public void subtypeAssignError() throws IOException {
-        assertEquals(testFile("SubTypeAssign-error.java"), "Type error\n");
-    }
-
-    @Test
-    public void circleRefError() throws IOException {
-        assertEquals(testFile("CircleRef.java"), "Type error\n");
-    }
 }
