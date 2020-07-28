@@ -28,6 +28,6 @@ dependencies {
 }
 
 application {
-    mainClassName = 'inter_code_gen.J2V'
+    mainClassName = 'vapor_code_gen.J2V'
     //mainClassName = 'syntax_checker.Typecheck'
 }
