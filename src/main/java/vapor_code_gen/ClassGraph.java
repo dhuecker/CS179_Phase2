@@ -15,65 +15,62 @@ public class ClassGraph {
     }
 
     public void addEdge(String x, String y) {
-        ClassGraphNode x_node = null;
-        ClassGraphNode y_node = null;
+        ClassGraphNode a_node = null;
+        ClassGraphNode b_node = null;
 
-        Iterator<ClassGraphNode> nodeIterator = nodes.iterator();
-        while (nodeIterator.hasNext()) {
-            ClassGraphNode currNode = nodeIterator.next();
-            if (currNode.equals(x)) {
-                x_node = currNode; // Node exists in list already
+        Iterator<ClassGraphNode> nodeIt = nodes.iterator();
+        while (nodeIt.hasNext()) {
+            ClassGraphNode currentNode = nodeIt.next();
+            if (currentNode.equals(x)) {
+                a_node = currentNode;
             }
-            if (currNode.equals(y)) {
-                y_node = currNode;
+            if (currentNode.equals(y)) {
+                b_node = currentNode;
             }
         }
 
-        // Node needs to be added to list
-        if (x_node == null) {
-            x_node = new ClassGraphNode(x);
-            nodes.add(x_node);
+        if (a_node == null) {
+            a_node = new ClassGraphNode(x);
+            nodes.add(a_node);
         }
 
-        if (y_node == null) {
-            y_node = new ClassGraphNode(y);
-            nodes.add(y_node);
+        if (b_node == null) {
+            b_node = new ClassGraphNode(y);
+            nodes.add(b_node);
         }
 
-        edges.add(new Tuple<>(x_node, y_node));
+        edges.add(new Tuple<>(a_node, b_node));
     }
 
-    // Modified DFS
     public List<String> topologicalSort() {
-        List<String> orderedList = new ArrayList<>();
+        List<String> oList = new ArrayList<>();
 
         while (hasUnmarkedPermNodes()) {
-            visit(getUnmarkedPermNode(), orderedList);
+            visit(getUnmarkedPermNode(), oList);
         }
 
-        // Prune for "null" nodes (ie nodes with no parent)
-        orderedList.remove(null);
+        oList.remove(null);
 
-        Collections.reverse(orderedList);
+        Collections.reverse(oList);
 
-        return orderedList;
+        return oList;
     }
 
     public void print() {
-        Iterator<Tuple<ClassGraphNode, ClassGraphNode> > edgeIterator = edges.iterator();
-        while (edgeIterator.hasNext()) {
-            Tuple<ClassGraphNode, ClassGraphNode> currEdge = edgeIterator.next();
+        Iterator<Tuple<ClassGraphNode, ClassGraphNode> > edgeIt = edges.iterator();
+        while (edgeIt.hasNext()) {
+            Tuple<ClassGraphNode, ClassGraphNode> currentEdge = edgeIt.next();
 
-            System.out.println(currEdge.x.name + " -> " + currEdge.y.name);
+            System.out.println(currentEdge.x.name + " -> " + currentEdge.y.name);
         }
     }
 
     // Helper functions for topological sort
 
     boolean hasUnmarkedPermNodes() {
-        Iterator<ClassGraphNode> n =  nodes.iterator();
-        while (n.hasNext()) {
-            if (!n.next().pMark)
+        Iterator<ClassGraphNode> x =  nodes.iterator();
+        while (x.hasNext()) {
+            if (!x.next().pMark)
                 return true;
         }
 
@@ -81,22 +78,21 @@ public class ClassGraph {
     }
 
     ClassGraphNode getUnmarkedPermNode() {
-        Iterator<ClassGraphNode> n =  nodes.iterator();
-        while (n.hasNext()) {
-            ClassGraphNode c = n.next();
-            if (!c.pMark) return c;
+        Iterator<ClassGraphNode> x =  nodes.iterator();
+        while (x.hasNext()) {
+            ClassGraphNode temp = x.next();
+            if (!temp.pMark) return temp;
         }
 
         return null;
     }
 
-    // if edge n -> m exists, returns m
     ClassGraphNode getEdgePartner(ClassGraphNode n) {
         Iterator<Tuple<ClassGraphNode, ClassGraphNode> > edge = edges.iterator();
         while (edge.hasNext()) {
-            Tuple<ClassGraphNode, ClassGraphNode> currEdge = edge.next();
-            if (currEdge.x.equals(n.name))
-                return currEdge.y;
+            Tuple<ClassGraphNode, ClassGraphNode> currentEdge = edge.next();
+            if (currentEdge.x.equals(n.name))
+                return currentEdge.y;
         }
 
         return null;
@@ -110,9 +106,9 @@ public class ClassGraph {
 
         node.giveTempMark();
 
-        ClassGraphNode edgeMate = getEdgePartner(node);
-        if (edgeMate != null)
-            visit(edgeMate, list);
+        ClassGraphNode edgePartner = getEdgePartner(node);
+        if (edgePartner != null)
+            visit(edgePartner, list);
 
         node.takeTempMark();
         node.givePermMark();

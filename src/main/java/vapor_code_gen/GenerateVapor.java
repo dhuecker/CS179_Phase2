@@ -7,11 +7,11 @@ import java.util.Iterator;
 public class  GenerateVapor {
 
     List<String> Vapbuffer;
-    int intentLevel;
+    int inLevel;
 
     public GenerateVapor() {
         Vapbuffer = new ArrayList<>();
-        intentLevel = 0;
+        inLevel = 0;
     }
 
     public void setupTables(List<ClassRecordKeeper> classRecordKeepers) {
@@ -22,9 +22,7 @@ public class  GenerateVapor {
     }
 
     public void printBuffer() {
-
         addLine("");
-
         Iterator<String> temp = Vapbuffer.iterator();
         while (temp.hasNext()) {
             System.out.println(temp.next());
@@ -33,25 +31,23 @@ public class  GenerateVapor {
 
     public void addLine(String l) {
         String prefix = "";
-        for (int a = 0; a < intentLevel * 2; a++)
+        for (int a = 0; a < inLevel * 2; a++)
             prefix += " ";
-
         Vapbuffer.add(prefix + l);
     }
 
     public void increaseIndent() {
-        intentLevel++;
+        inLevel++;
     }
 
     public void descreaseIndent() {
-        if (intentLevel != 0)
-            intentLevel--;
+        if (inLevel != 0)
+            inLevel--;
     }
 
     void initClassRecord(ClassRecordKeeper x) {
         initVTable(x.v_table);
 
-        // Mutable data for class fields
         if (x.cname.equals("Main"))
             addLine("const Main_Class");
         else
@@ -69,11 +65,11 @@ public class  GenerateVapor {
 
         Iterator<String> funcTemp = vtab.functions.iterator();
         while (funcTemp.hasNext()) {
-            String funcName = funcTemp.next();
-            if (funcName.contains("main")) {
+            String fName = funcTemp.next();
+            if (fName.contains("main")) {
                 addLine(":Main");
             } else {
-                addLine(":" + funcName);
+                addLine(":" + fName);
             }
         }
 

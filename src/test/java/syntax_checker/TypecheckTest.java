@@ -4,7 +4,6 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import java.io.*;
-import java.util.Scanner;
 
 import static org.junit.Assert.*;
 
@@ -17,7 +16,7 @@ public class TypecheckTest {
         try {
             final FileInputStream finput = new FileInputStream(new File("src/test/resources/input_files/" + name));
             System.setIn(finput);
-            Typecheck.typeCheck();
+            Typecheck.typeChecking();
             finput.close();
         } finally {
             System.setIn(og);

@@ -81,7 +81,7 @@ public class VaporGenVisitor<R,A> implements GJVisitor<R,A>  {
     List<String> getMethodArgs(String cName, String mName) {
         List<String> tempArgs = new ArrayList<>();
 
-        ClassBook currClass = (ClassBook) Typecheck.symbolTable.get(Symbol.symbol(cName));
+        ClassBook currClass = (ClassBook) Typecheck.sTable.get(Symbol.symbol(cName));
         MethodsBook currMethod = (MethodsBook) currClass.methods.get(Symbol.symbol(mName));
 
         for (int a = 0; a < currMethod.params.size(); a++) {
@@ -224,7 +224,7 @@ public class VaporGenVisitor<R,A> implements GJVisitor<R,A>  {
     public R visit(ClassDeclaration n, A argu) {
         R _ret=null;
 
-        currentClassBook = (ClassBook) Typecheck.symbolTable.get(Symbol.symbol(classname(n)));
+        currentClassBook = (ClassBook) Typecheck.sTable.get(Symbol.symbol(classname(n)));
         currentClass = classname(n);
         currentMethod = null;
 
@@ -250,7 +250,7 @@ public class VaporGenVisitor<R,A> implements GJVisitor<R,A>  {
     public R visit(ClassExtendsDeclaration n, A argu) {
         R _ret=null;
 
-        currentClassBook = (ClassBook) Typecheck.symbolTable.get(Symbol.symbol(classname(n)));
+        currentClassBook = (ClassBook) Typecheck.sTable.get(Symbol.symbol(classname(n)));
         currentClass = classname(n);
         currentMethod = null;
 
@@ -328,10 +328,10 @@ public class VaporGenVisitor<R,A> implements GJVisitor<R,A>  {
         n.f12.accept(this, argu);
 
         if (findRecord(currentClass) != null) {
-            int fieldOffset = findRecord(currentClass).getFieldOffset((String) retExpress);
-            if (fieldOffset != -1) {
+            int fieldOff = findRecord(currentClass).getFieldOffset((String) retExpress);
+            if (fieldOff != -1) {
                 String temp = createTemp();
-                genvap.addLine(temp + " = [this + " + (fieldOffset * 4) + "]");
+                genvap.addLine(temp + " = [this + " + (fieldOff * 4) + "]");
                 retExpress = temp;
             }
         }
@@ -456,7 +456,7 @@ public class VaporGenVisitor<R,A> implements GJVisitor<R,A>  {
      */
     public R visit(AssignmentStatement n, A argu) {
         R _ret=null;
-        String idName = (String) n.f0.accept(this, argu);
+        String tempName = (String) n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         String expressVal = (String) n.f2.accept(this, argu);
         n.f3.accept(this, argu);
@@ -464,25 +464,25 @@ public class VaporGenVisitor<R,A> implements GJVisitor<R,A>  {
         if (expressVal.contains("::")) {
             int div = expressVal.indexOf("::");
             String allocType = expressVal.substring(0, div);
-            String varName = expressVal.substring(div + 2);
-            expressVal = varName;
+            String vName = expressVal.substring(div + 2);
+            expressVal = vName;
         }
 
         if (findRecord(currentClass) != null) {
-            int fieldOffset = findRecord(currentClass).getFieldOffset(idName);
-            if (fieldOffset != -1) {
-                idName = "[this + " + (fieldOffset * 4) + "]";
+            int fieldOff = findRecord(currentClass).getFieldOffset(tempName);
+            if (fieldOff != -1) {
+                tempName = "[this + " + (fieldOff * 4) + "]";
             }
         }
 
         if (findRecord(currentClass) != null) {
-            int fieldOffset = findRecord(currentClass).getFieldOffset(expressVal);
-            if (fieldOffset != -1) {
-                expressVal = "[this + " + (fieldOffset * 4) + "]";
+            int fieldOff = findRecord(currentClass).getFieldOffset(expressVal);
+            if (fieldOff != -1) {
+                expressVal = "[this + " + (fieldOff * 4) + "]";
             }
         }
 
-        genvap.addLine(idName + " = " + expressVal);
+        genvap.addLine(tempName + " = " + expressVal);
 
         return _ret;
     }
@@ -507,19 +507,19 @@ public class VaporGenVisitor<R,A> implements GJVisitor<R,A>  {
         n.f6.accept(this, argu);
 
         if (findRecord(currentClass) != null) {
-            int fieldOffset = findRecord(currentClass).getFieldOffset(baseAddress);
-            if (fieldOffset != -1) {
+            int fieldOff = findRecord(currentClass).getFieldOffset(baseAddress);
+            if (fieldOff != -1) {
                 String temp = createTemp();
-                genvap.addLine(temp + " = Add(this " + (fieldOffset * 4) + ")");
+                genvap.addLine(temp + " = Add(this " + (fieldOff * 4) + ")");
                 genvap.addLine(temp + " = [" + temp + "]");
                 baseAddress = temp;
             }
         }
 
-        String alignedOffset = createTemp();
-        genvap.addLine(alignedOffset + " = MulS(" + offsetTemp + " 4)");
+        String alignedOff = createTemp();
+        genvap.addLine(alignedOff + " = MulS(" + offsetTemp + " 4)");
         String ArrayIndex = createTemp();
-        genvap.addLine(ArrayIndex + " = Add(" + baseAddress + " " + alignedOffset + ")");
+        genvap.addLine(ArrayIndex + " = Add(" + baseAddress + " " + alignedOff + ")");
         genvap.addLine(ArrayIndex + " = Add(" + ArrayIndex + " 4)");
         genvap.addLine("[" + ArrayIndex + "] = " + assignTemp);
 
@@ -547,10 +547,10 @@ public class VaporGenVisitor<R,A> implements GJVisitor<R,A>  {
         n.f3.accept(this, argu);
 
         if (findRecord(currentClass) != null) {
-            int fieldOffset = findRecord(currentClass).getFieldOffset(boolRes);
-            if (fieldOffset != -1) {
+            int fieldOff = findRecord(currentClass).getFieldOffset(boolRes);
+            if (fieldOff != -1) {
                 String Temp_RHS = createTemp();
-                genvap.addLine(Temp_RHS + " = [this + " + (fieldOffset * 4) + "]");
+                genvap.addLine(Temp_RHS + " = [this + " + (fieldOff * 4) + "]");
                 boolRes = Temp_RHS;
             }
         }
@@ -592,10 +592,10 @@ public class VaporGenVisitor<R,A> implements GJVisitor<R,A>  {
         String express = (String) n.f2.accept(this, argu);
 
         if (findRecord(currentClass) != null) {
-            int fieldOffset = findRecord(currentClass).getFieldOffset(express);
-            if (fieldOffset != -1) {
+            int fieldOff = findRecord(currentClass).getFieldOffset(express);
+            if (fieldOff != -1) {
                 String Temp_RHS = createTemp();
-                genvap.addLine(Temp_RHS + " = [this + " + (fieldOffset * 4) + "]");
+                genvap.addLine(Temp_RHS + " = [this + " + (fieldOff * 4) + "]");
                 express = Temp_RHS;
             }
         }
@@ -626,10 +626,10 @@ public class VaporGenVisitor<R,A> implements GJVisitor<R,A>  {
         n.f4.accept(this, argu);
 
         if (findRecord(currentClass) != null) {
-            int fieldOffset = findRecord(currentClass).getFieldOffset((String)pVal);
-            if (fieldOffset != -1) {
+            int fieldOff = findRecord(currentClass).getFieldOffset((String)pVal);
+            if (fieldOff != -1) {
                 String Temp_RHS = createTemp();
-                genvap.addLine(Temp_RHS + " = [this + " + (fieldOffset * 4) + "]");
+                genvap.addLine(Temp_RHS + " = [this + " + (fieldOff * 4) + "]");
                 pVal = (R) Temp_RHS;
             }
         }
@@ -672,20 +672,20 @@ public class VaporGenVisitor<R,A> implements GJVisitor<R,A>  {
         String resultTemp = createTemp();
 
         if (findRecord(currentClass) != null) {
-            int fieldOffset = findRecord(currentClass).getFieldOffset((String)RHS);
-            if (fieldOffset != -1) {
+            int fieldOff = findRecord(currentClass).getFieldOffset((String)RHS);
+            if (fieldOff != -1) {
                 String Temp_RHS = createTemp();
-                genvap.addLine(Temp_RHS + " = [this + " + (fieldOffset * 4) + "]");
+                genvap.addLine(Temp_RHS + " = [this + " + (fieldOff * 4) + "]");
                 RHS = (R) Temp_RHS;
             }
         }
 
         if (findRecord(currentClass) != null) {
-            int fieldOffset = findRecord(currentClass).getFieldOffset((String)LHS);
-            if (fieldOffset != -1) {
-                String temp_lhs = createTemp();
-                genvap.addLine(temp_lhs + " = [this + " + (fieldOffset * 4) + "]");
-                LHS = (R) temp_lhs;
+            int fieldOff = findRecord(currentClass).getFieldOffset((String)LHS);
+            if (fieldOff != -1) {
+                String Temp_LHS = createTemp();
+                genvap.addLine(Temp_LHS + " = [this + " + (fieldOff * 4) + "]");
+                LHS = (R) Temp_LHS;
             }
         }
 
@@ -710,19 +710,19 @@ public class VaporGenVisitor<R,A> implements GJVisitor<R,A>  {
         R LHS = n.f2.accept(this, argu);
 
         if (findRecord(currentClass) != null) {
-            int fieldOffset = findRecord(currentClass).getFieldOffset((String)RHS);
-            if (fieldOffset != -1) {
+            int fieldOff = findRecord(currentClass).getFieldOffset((String)RHS);
+            if (fieldOff != -1) {
                 String Temp_RHS = createTemp();
-                genvap.addLine(Temp_RHS + " = [this + " + (fieldOffset * 4) + "]");
+                genvap.addLine(Temp_RHS + " = [this + " + (fieldOff * 4) + "]");
                 RHS = (R) Temp_RHS;
             }
         }
 
         if (findRecord(currentClass) != null) {
-            int fieldOffset = findRecord(currentClass).getFieldOffset((String)LHS);
-            if (fieldOffset != -1) {
+            int fieldOff = findRecord(currentClass).getFieldOffset((String)LHS);
+            if (fieldOff != -1) {
                 String Temp_LHS = createTemp();
-                genvap.addLine(Temp_LHS + " = [this + " + (fieldOffset * 4) + "]");
+                genvap.addLine(Temp_LHS + " = [this + " + (fieldOff * 4) + "]");
                 LHS = (R) Temp_LHS;
             }
         }
@@ -748,19 +748,19 @@ public class VaporGenVisitor<R,A> implements GJVisitor<R,A>  {
 
 
         if (findRecord(currentClass) != null) {
-            int fieldOffset = findRecord(currentClass).getFieldOffset((String)RHS);
-            if (fieldOffset != -1) {
+            int fieldOff = findRecord(currentClass).getFieldOffset((String)RHS);
+            if (fieldOff != -1) {
                 String Temp_RHS = createTemp();
-                genvap.addLine(Temp_RHS + " = [this + " + (fieldOffset * 4) + "]");
+                genvap.addLine(Temp_RHS + " = [this + " + (fieldOff * 4) + "]");
                 RHS = (R) Temp_RHS;
             }
         }
 
         if (findRecord(currentClass) != null) {
-            int fieldOffset = findRecord(currentClass).getFieldOffset((String)LHS);
-            if (fieldOffset != -1) {
+            int fieldOff = findRecord(currentClass).getFieldOffset((String)LHS);
+            if (fieldOff != -1) {
                 String Temp_LHS = createTemp();
-                genvap.addLine(Temp_LHS + " = [this + " + (fieldOffset * 4) + "]");
+                genvap.addLine(Temp_LHS + " = [this + " + (fieldOff * 4) + "]");
                 LHS = (R) Temp_LHS;
             }
         }
@@ -785,19 +785,19 @@ public class VaporGenVisitor<R,A> implements GJVisitor<R,A>  {
         R LHS = n.f2.accept(this, argu);
 
         if (findRecord(currentClass) != null) {
-            int fieldOffset = findRecord(currentClass).getFieldOffset((String)RHS);
-            if (fieldOffset != -1) {
+            int fieldOff = findRecord(currentClass).getFieldOffset((String)RHS);
+            if (fieldOff != -1) {
                 String Temp_RHS = createTemp();
-                genvap.addLine(Temp_RHS + " = [this + " + (fieldOffset * 4) + "]");
+                genvap.addLine(Temp_RHS + " = [this + " + (fieldOff * 4) + "]");
                 RHS = (R) Temp_RHS;
             }
         }
 
         if (findRecord(currentClass) != null) {
-            int fieldOffset = findRecord(currentClass).getFieldOffset((String)LHS);
-            if (fieldOffset != -1) {
+            int fieldOff = findRecord(currentClass).getFieldOffset((String)LHS);
+            if (fieldOff != -1) {
                 String Temp_LHS = createTemp();
-                genvap.addLine(Temp_LHS + " = [this + " + (fieldOffset * 4) + "]");
+                genvap.addLine(Temp_LHS + " = [this + " + (fieldOff * 4) + "]");
                 LHS = (R) Temp_LHS;
             }
         }
@@ -822,19 +822,19 @@ public class VaporGenVisitor<R,A> implements GJVisitor<R,A>  {
         R LHS = n.f2.accept(this, argu);
 
         if (findRecord(currentClass) != null) {
-            int fieldOffset = findRecord(currentClass).getFieldOffset((String)RHS);
-            if (fieldOffset != -1) {
+            int fieldOff = findRecord(currentClass).getFieldOffset((String)RHS);
+            if (fieldOff != -1) {
                 String Temp_RHS = createTemp();
-                genvap.addLine(Temp_RHS + " = [this + " + (fieldOffset * 4) + "]");
+                genvap.addLine(Temp_RHS + " = [this + " + (fieldOff * 4) + "]");
                 RHS = (R) Temp_RHS;
             }
         }
 
         if (findRecord(currentClass) != null) {
-            int fieldOffset = findRecord(currentClass).getFieldOffset((String)LHS);
-            if (fieldOffset != -1) {
+            int fieldOff = findRecord(currentClass).getFieldOffset((String)LHS);
+            if (fieldOff != -1) {
                 String Temp_LHS = createTemp();
-                genvap.addLine(Temp_LHS + " = [this + " + (fieldOffset * 4) + "]");
+                genvap.addLine(Temp_LHS + " = [this + " + (fieldOff * 4) + "]");
                 LHS = (R) Temp_LHS;
             }
         }
@@ -860,26 +860,26 @@ public class VaporGenVisitor<R,A> implements GJVisitor<R,A>  {
         String offsetTemp = (String) n.f2.accept(this, argu);
         n.f3.accept(this, argu);
 
-        // TODO: Check if the value of [<val>] is gte 0
+
         String resultTemp = createTemp();
-        String alignedOffset = createTemp();
+        String alignedOff = createTemp();
         String tempL1 = createLabel();
         String tempL2 = createLabel();
-        genvap.addLine(alignedOffset + " = " + offsetTemp);
-        // alignedOffset is now the index
+        genvap.addLine(alignedOff + " = " + offsetTemp);
         String baseAddress = createTemp();
+
         if (findRecord(currentClass) != null) {
-            int fieldOffset = findRecord(currentClass).getFieldOffset(ptrTemp);
-            if (fieldOffset != -1) {
+            int fieldOff = findRecord(currentClass).getFieldOffset(ptrTemp);
+            if (fieldOff != -1) {
                 String temp = createTemp();
-                genvap.addLine(temp + " = [this + " + (fieldOffset * 4) + "]");
+                genvap.addLine(temp + " = [this + " + (fieldOff * 4) + "]");
                 ptrTemp = temp;
             }
         }
 
         genvap.addLine(baseAddress + " = [" + ptrTemp + "]");
 
-        genvap.addLine("ok = LtS(" + alignedOffset + " " + baseAddress + ")");
+        genvap.addLine("ok = LtS(" + alignedOff + " " + baseAddress + ")");
         genvap.addLine("if ok goto :" + tempL1);
         genvap.addLine("Error(\"array index out of bounds\")");
         genvap.addLine(tempL1+":");
@@ -887,10 +887,10 @@ public class VaporGenVisitor<R,A> implements GJVisitor<R,A>  {
         genvap.addLine("if ok goto :" + tempL2);
         genvap.addLine("Error(\"array index out of bounds\")");
         genvap.addLine(tempL2 + ":");
-        genvap.addLine(alignedOffset + " = MulS(" + offsetTemp + " 4)");
-        genvap.addLine(alignedOffset + " = Add(" + ptrTemp + " " + alignedOffset + ")");
-        genvap.addLine(alignedOffset + " = Add(" + alignedOffset + " 4)");
-        genvap.addLine(resultTemp + " = [" + alignedOffset + "]");
+        genvap.addLine(alignedOff + " = MulS(" + offsetTemp + " 4)");
+        genvap.addLine(alignedOff + " = Add(" + ptrTemp + " " + alignedOff + ")");
+        genvap.addLine(alignedOff + " = Add(" + alignedOff + " 4)");
+        genvap.addLine(resultTemp + " = [" + alignedOff + "]");
 
         _ret = (R) resultTemp;
 
@@ -928,7 +928,6 @@ public class VaporGenVisitor<R,A> implements GJVisitor<R,A>  {
     public R visit(MessageSend n, A argu) {
         R _ret=null;
 
-        // TODO: Handle when funcOwner is not a "new <Class>" statement
         R funcOwnerTemp = n.f0.accept(this, argu);
         n.f1.accept(this, argu);
         n.f2.accept(this, argu);
@@ -942,14 +941,14 @@ public class VaporGenVisitor<R,A> implements GJVisitor<R,A>  {
 
         // Clean up args
         if (argsTemp != null) {
-            String[] argTokens = argsTemp.split(" ", 100);
+            String[] aTokens = argsTemp.split(" ", 100);
             StringBuilder fixed = new StringBuilder();
-            for (String argToken : argTokens) {
+            for (String argToken : aTokens) {
                 if (findRecord(currentClass) != null) {
-                    int fieldOffset = findRecord(currentClass).getFieldOffset(argToken);
-                    if (fieldOffset != -1) {
+                    int fieldOff = findRecord(currentClass).getFieldOffset(argToken);
+                    if (fieldOff != -1) {
                         String temp = createTemp();
-                        genvap.addLine(temp + " = [this + " + (fieldOffset * 4) + "]");
+                        genvap.addLine(temp + " = [this + " + (fieldOff * 4) + "]");
                         fixed.append(temp).append(" ");
                     } else {
                         fixed.append(argToken).append(" ");
@@ -962,45 +961,43 @@ public class VaporGenVisitor<R,A> implements GJVisitor<R,A>  {
             argsTemp = fixed.toString();
         }
 
-        // Primary expression was an allocation
-        // <Type>::<name>
         if (((String) funcOwnerTemp).contains("::")) {
             int div = ((String) funcOwnerTemp).indexOf("::");
 
-            String allocType = ((String) funcOwnerTemp).substring(0, div);
+            String aType = ((String) funcOwnerTemp).substring(0, div);
             String vName = ((String) funcOwnerTemp).substring(div + 2);
 
-            int offset = getMethodOffset(allocType, mName);
+            int offTemp = getMethodOffset(aType, mName);
 
             genvap.addLine(vTableBaseTemp + " = [" + vName + "]"); // Get
             genvap.addLine(vTableBaseTemp + " = [" + vTableBaseTemp + "]");
-            genvap.addLine(vTableBaseTemp + " = [" + vTableBaseTemp + " + " + (offset*4) + "]");
+            genvap.addLine(vTableBaseTemp + " = [" + vTableBaseTemp + " + " + (offTemp*4) + "]");
             if (argsTemp != null)
                 genvap.addLine(resultTemp + " = call " + vTableBaseTemp + "(" + vName + " " + argsTemp + ")");
             else
                 genvap.addLine(resultTemp + " = call " + vTableBaseTemp + "(" + vName + ")");
         } else {
             if (funcOwnerTemp.equals("this")) {
-                int offset = getMethodOffset(currentClass, mName);
+                int offTemp = getMethodOffset(currentClass, mName);
 
-                String funcPtr = createTemp();
-                genvap.addLine(funcPtr + " = [this]");
-                genvap.addLine(funcPtr + " = [" + funcPtr + "]");
-                genvap.addLine(funcPtr + " = [" + funcPtr + " + " + offset * 4 +  "]");
+                String tempPtr = createTemp();
+                genvap.addLine(tempPtr + " = [this]");
+                genvap.addLine(tempPtr + " = [" + tempPtr + "]");
+                genvap.addLine(tempPtr + " = [" + tempPtr + " + " + offTemp * 4 +  "]");
                 if (argsTemp != null)
-                    genvap.addLine(resultTemp + " = call " + funcPtr + "(this " + argsTemp + ")");
+                    genvap.addLine(resultTemp + " = call " + tempPtr + "(this " + argsTemp + ")");
                 else
-                    genvap.addLine(resultTemp + " = call " + funcPtr + "(this)");
+                    genvap.addLine(resultTemp + " = call " + tempPtr + "(this)");
             } else if (funcCallTemps.contains(funcOwnerTemp)) {
-                // Nested function call
-                int index = funcCallTemps.indexOf(funcOwnerTemp);
-                String classReturned = funcCallTypes.get(index).getClassReturned();
 
-                int offset = getMethodOffset(classReturned, mName);
+                int index = funcCallTemps.indexOf(funcOwnerTemp);
+                String cReturned = funcCallTypes.get(index).getClassReturned();
+
+                int offTemp = getMethodOffset(cReturned, mName);
 
                 genvap.addLine("vt = [" + funcOwnerTemp + "]");
                 genvap.addLine("vt = [vt]");
-                genvap.addLine("f = [vt + " + (offset*4) + "]");
+                genvap.addLine("f = [vt + " + (offTemp*4) + "]");
 
                 if (argsTemp != null)
                     genvap.addLine(resultTemp + " = call f(" + funcOwnerTemp + " " + argsTemp + ")");
@@ -1008,12 +1005,11 @@ public class VaporGenVisitor<R,A> implements GJVisitor<R,A>  {
                     genvap.addLine(resultTemp + " = call f(" + funcOwnerTemp + ")");
 
             } else {
-                // Fetch type of funcOwner
-                ClassBook cbook = (ClassBook) Typecheck.symbolTable.get(Symbol.symbol(currentClass));
+
+                ClassBook cbook = (ClassBook) Typecheck.sTable.get(Symbol.symbol(currentClass));
                 MethodsBook mbook = (MethodsBook) cbook.methods.get(Symbol.symbol(mName));
                 String type = cbook.getIdType((String) funcOwnerTemp, currentMethod);
 
-                // FuncOwner returns a regular variable instead
                 if (type == null) {
                     if (randIds.contains(funcOwnerTemp)) {
                         type = randTypes.get(randIds.indexOf(funcOwnerTemp));
@@ -1025,10 +1021,10 @@ public class VaporGenVisitor<R,A> implements GJVisitor<R,A>  {
 
                     String x = (String) funcOwnerTemp;
                     if (findRecord(currentClass) != null) {
-                        int fieldOffset = findRecord(currentClass).getFieldOffset((String) funcOwnerTemp);
-                        if (fieldOffset != -1) {
+                        int fieldOff = findRecord(currentClass).getFieldOffset((String) funcOwnerTemp);
+                        if (fieldOff != -1) {
                             String temp = createTemp();
-                            genvap.addLine(temp + " = [this + " + (fieldOffset * 4) + "]");
+                            genvap.addLine(temp + " = [this + " + (fieldOff * 4) + "]");
                             x = temp;
                         }
                     }
@@ -1156,9 +1152,7 @@ public class VaporGenVisitor<R,A> implements GJVisitor<R,A>  {
     public R visit(ThisExpression n, A argu) {
         R _ret=null;
         n.f0.accept(this, argu);
-
         _ret = (R) "this";
-
         return _ret;
     }
 
@@ -1178,22 +1172,20 @@ public class VaporGenVisitor<R,A> implements GJVisitor<R,A>  {
         n.f4.accept(this, argu);
 
         String arrName = createTemp();
-        String sizeOffsetTemp = createTemp();
+        String sizeOffTemp = createTemp();
 
         if (findRecord(currentClass) != null) {
-            int fieldOffset = findRecord(currentClass).getFieldOffset((String)sizeStrTemp);
-            if (fieldOffset != -1) {
+            int fieldOff = findRecord(currentClass).getFieldOffset((String)sizeStrTemp);
+            if (fieldOff != -1) {
                 String Temp_RHS = createTemp();
-                genvap.addLine(Temp_RHS + " = [this + " + (fieldOffset * 4) + "]");
+                genvap.addLine(Temp_RHS + " = [this + " + (fieldOff * 4) + "]");
                 sizeStrTemp = (R) Temp_RHS;
             }
         }
 
-        genvap.addLine(sizeOffsetTemp  + " = MulS(" + sizeStrTemp + " 4)");
-        genvap.addLine(sizeOffsetTemp + " = Add(" + sizeOffsetTemp + " 4)");
-        genvap.addLine(arrName + " = HeapAllocZ(" + sizeOffsetTemp + ")");
-
-        // Store the size (in index) of the array in the base of the array
+        genvap.addLine(sizeOffTemp  + " = MulS(" + sizeStrTemp + " 4)");
+        genvap.addLine(sizeOffTemp + " = Add(" + sizeOffTemp + " 4)");
+        genvap.addLine(arrName + " = HeapAllocZ(" + sizeOffTemp + ")");
         genvap.addLine("[" + arrName + "] = " + sizeStrTemp);
 
         _ret = (R) arrName;
@@ -1214,14 +1206,14 @@ public class VaporGenVisitor<R,A> implements GJVisitor<R,A>  {
         n.f2.accept(this, argu);
         n.f3.accept(this, argu);
 
-        String cStringTemp = n.f1.f0.toString();
-        String objStringTemp = createTemp();
-        ClassRecordKeeper recordTemp = findRecord(cStringTemp);
+        String cStrTemp = n.f1.f0.toString();
+        String objStrTemp = createTemp();
+        ClassRecordKeeper recordTemp = findRecord(cStrTemp);
 
-        genvap.addLine(objStringTemp + " = HeapAllocZ(" + (recordTemp.getSize()) + ")");
-        genvap.addLine("[" + objStringTemp + "] = " + ":" + cStringTemp);
+        genvap.addLine(objStrTemp + " = HeapAllocZ(" + (recordTemp.getSize()) + ")");
+        genvap.addLine("[" + objStrTemp + "] = " + ":" + cStrTemp);
 
-        _ret = (R) (cStringTemp + "::" + objStringTemp);
+        _ret = (R) (cStrTemp + "::" + objStrTemp);
 
         return _ret;
     }

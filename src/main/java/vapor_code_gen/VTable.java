@@ -22,11 +22,11 @@ public class VTable {
         int counter = 0;
         Iterator<String> x = functions.iterator();
         while(x.hasNext()) {
-            String curr = x.next();
+            String currentTemp = x.next();
 
-            int subStr = curr.indexOf("_" + key);
-            if (subStr != -1)
-            if (curr.substring(subStr).equals("_" + key))
+            int subTemp = currentTemp.indexOf("_" + key);
+            if (subTemp != -1)
+            if (currentTemp.substring(subTemp).equals("_" + key))
                 return counter;
 
             counter++;

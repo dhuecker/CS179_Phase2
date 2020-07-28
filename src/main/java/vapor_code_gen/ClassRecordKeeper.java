@@ -26,12 +26,12 @@ public class ClassRecordKeeper {
         fields.add(name);
     }
 
-    // Offset starts at one because the address of the vtable gets stored in zero
+
     public int getFieldOffset(String field) {
         int tempOff = 1;
-        Iterator<String> fieldIter = fields.iterator();
-        while (fieldIter.hasNext()) {
-            if (fieldIter.next().equals(field))
+        Iterator<String> fieldIt = fields.iterator();
+        while (fieldIt.hasNext()) {
+            if (fieldIt.next().equals(field))
                 return tempOff;
             tempOff++;
         }

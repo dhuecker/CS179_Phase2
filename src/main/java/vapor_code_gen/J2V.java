@@ -15,16 +15,16 @@ public class J2V {
     public static void generateCode() {
 
 
-        if (!Typecheck.typeCheck()) {
+        if (!Typecheck.typeChecking()) {
             // Program is not valid
             // Do not proceed further
         } else {
             // Construct a class graph
             ClassGraph tempCG = new ClassGraph();
-            Iterator<String> newClasses = Typecheck.symbolTable.getItems().iterator();
+            Iterator<String> newClasses = Typecheck.sTable.getItems().iterator();
             while (newClasses.hasNext()) {
                 String currentClassname = newClasses.next();
-                ClassBook currentClassTemp = (ClassBook) Typecheck.symbolTable.get(Symbol.symbol(currentClassname));
+                ClassBook currentClassTemp = (ClassBook) Typecheck.sTable.get(Symbol.symbol(currentClassname));
 
                 tempCG.addEdge(currentClassname, currentClassTemp.parent);
             }
@@ -37,7 +37,7 @@ public class J2V {
             while(classesTemp.hasNext()) {
                 String currentClassname = classesTemp.next();
 
-                ClassBook currentClassTemp = (ClassBook) Typecheck.symbolTable.get(Symbol.symbol(currentClassname));
+                ClassBook currentClassTemp = (ClassBook) Typecheck.sTable.get(Symbol.symbol(currentClassname));
 
                 ClassRecordKeeper currentRecordTemp = new ClassRecordKeeper(currentClassname);
                 classRecordKeepers.add(currentRecordTemp);
