@@ -539,7 +539,7 @@ public class VaporGenVisitor<R,A> implements GJVisitor<R,A>  {
         R _ret=null;
 
         String elseLabel = createLabel();
-        String endIf = createLabel();
+        String endIfLabel = createLabel();
 
         n.f0.accept(this, argu);
         n.f1.accept(this, argu);
@@ -558,14 +558,14 @@ public class VaporGenVisitor<R,A> implements GJVisitor<R,A>  {
         genvap.addLine("if0 " + boolRes + " goto " + ":" + elseLabel);
         genvap.increaseIndent();
         n.f4.accept(this, argu);
-        genvap.addLine("goto :" + endIf);
+        genvap.addLine("goto :" + endIfLabel);
         genvap.descreaseIndent();
         genvap.addLine(elseLabel + ":");
         genvap.increaseIndent();
         n.f5.accept(this, argu);
         n.f6.accept(this, argu);
         genvap.descreaseIndent();
-        genvap.addLine(endIf + ":");
+        genvap.addLine(endIfLabel + ":");
 
         return _ret;
     }
