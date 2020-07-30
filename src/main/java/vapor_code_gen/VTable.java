@@ -6,11 +6,11 @@ import java.util.ArrayList;
 
 public class VTable {
 
-    String name;
+    String Vname;
     public List<String> functions;
 
-    public VTable(String name) {
-        this.name = name;
+    public VTable(String Vname) {
+        this.Vname = Vname;
         functions = new ArrayList<>();
     }
 
@@ -19,7 +19,7 @@ public class VTable {
     }
 
     public int getFunctionOffset(String key) {
-        int counter = 0;
+        int counterTemp = 0;
         Iterator<String> x = functions.iterator();
         while(x.hasNext()) {
             String currentTemp = x.next();
@@ -27,9 +27,9 @@ public class VTable {
             int subTemp = currentTemp.indexOf("_" + key);
             if (subTemp != -1)
             if (currentTemp.substring(subTemp).equals("_" + key))
-                return counter;
+                return counterTemp;
 
-            counter++;
+            counterTemp++;
         }
         return -1;
     }

@@ -53,13 +53,13 @@ public class  GenerateVapor {
         else
             addLine("const " + x.cname);
         increaseIndent();
-        addLine(":" + x.vTab.name); // vTab pointer
+        addLine(":" + x.vTab.Vname); // vTab pointer
         descreaseIndent();
         addLine("");
     }
 
     void initVTable(VTable vtab) {
-        addLine("const " + vtab.name);
+        addLine("const " + vtab.Vname);
 
         increaseIndent();
 
