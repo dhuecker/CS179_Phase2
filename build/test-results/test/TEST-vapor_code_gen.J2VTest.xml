@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="vapor_code_gen.J2VTest" tests="1" skipped="0" failures="1" errors="0" timestamp="2020-07-30T16:06:33" hostname="anthony-Aspire-TC-705" time="0.052">
+<testsuite name="vapor_code_gen.J2VTest" tests="1" skipped="0" failures="1" errors="0" timestamp="2020-07-30T19:32:45" hostname="anthony-Aspire-TC-705" time="0.058">
   <properties/>
-  <testcase name="addTest" classname="vapor_code_gen.J2VTest" time="0.052">
+  <testcase name="addTest" classname="vapor_code_gen.J2VTest" time="0.058">
     <failure message="org.junit.ComparisonFailure: expected:&lt;[]&gt; but was:&lt;[const Add_vtable&#10;  :Main&#10;&#10;const Add&#10;  :Add_vtable&#10;&#10;func Main()&#10;  t.0 = Add(12 21)&#10;  PrintIntS(t.0)&#10;  ret&#10;&#10;&#10;]&gt;" type="org.junit.ComparisonFailure">org.junit.ComparisonFailure: expected:&lt;[]&gt; but was:&lt;[const Add_vtable
   :Main
 
