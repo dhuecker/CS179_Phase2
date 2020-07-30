@@ -65,8 +65,6 @@ public class ClassGraph {
         }
     }
 
-    // Helper functions for topological sort
-
     boolean hasUnmarkedPermNodes() {
         Iterator<ClassGraphNode> x =  nodes.iterator();
         while (x.hasNext()) {

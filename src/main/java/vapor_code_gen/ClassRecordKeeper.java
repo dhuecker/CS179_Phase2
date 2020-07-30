@@ -8,12 +8,12 @@ public class ClassRecordKeeper {
 
     public String cname;
     public List<String> fields;
-    public VTable v_table;
+    public VTable vTab;
 
     public ClassRecordKeeper(String classname) {
         this.cname = classname;
         fields = new ArrayList<>();
-        v_table = new VTable(classname + "_vtable");
+        vTab = new VTable(classname + "_vtable");
     }
 
     public void copyFieldsFrom(ClassRecordKeeper x) {
@@ -40,11 +40,11 @@ public class ClassRecordKeeper {
     }
 
     public int getMethodOffset(String method) {
-        return v_table.getFunctionOffset(method);
+        return vTab.getFunctionOffset(method);
     }
 
     public String getMethodLabel(int i) {
-        return v_table.getFunctionLabel(i);
+        return vTab.getFunctionLabel(i);
     }
 
     public int getSize() {

@@ -46,14 +46,14 @@ public class  GenerateVapor {
     }
 
     void initClassRecord(ClassRecordKeeper x) {
-        initVTable(x.v_table);
+        initVTable(x.vTab);
 
         if (x.cname.equals("Main"))
             addLine("const Main_Class");
         else
             addLine("const " + x.cname);
         increaseIndent();
-        addLine(":" + x.v_table.name); // v_table pointer
+        addLine(":" + x.vTab.name); // vTab pointer
         descreaseIndent();
         addLine("");
     }

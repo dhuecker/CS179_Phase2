@@ -17,7 +17,6 @@ public class J2V {
 
         if (!Typecheck.typeChecking()) {
             // Program is not valid
-            // Do not proceed further
         } else {
 
             ClassGraph tempCG = new ClassGraph();
@@ -55,7 +54,7 @@ public class J2V {
                     String currentMethod = methodsIt.next();
                     String fName = currentClassname + "_" + currentMethod;
 
-                    currentRecordTemp.v_table.addFunction(fName);
+                    currentRecordTemp.vTab.addFunction(fName);
                 }
             }
 
@@ -105,7 +104,7 @@ public class J2V {
 
             System.out.println("METHODS");
 
-            Iterator<String> methodsIt = current.v_table.functions.iterator();
+            Iterator<String> methodsIt = current.vTab.functions.iterator();
             while (methodsIt.hasNext()) {
                 System.out.println("     " + methodsIt.next());
             }

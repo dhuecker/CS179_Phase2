@@ -28,7 +28,6 @@ public class J2VTest {
         System.setOut(new PrintStream(tempOut));
 
         passFileToMain(name);
-
         System.setOut(ogOut);
         tempOut.close();
 
